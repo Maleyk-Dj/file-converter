@@ -11,7 +11,10 @@ import java.util.Set;
 @Component
 public class ImageToPdfConverter implements FileConverter {
 
-    private static final Set<String> SUPPORTED = Set.of("png", "jpg", "jpeg");
+    private static final String PNG = "png";
+    private static final String JPEG = "jpeg";
+    private static final String JPG = "jpg";
+    private static final Set<String> SUPPORTED = Set.of(PNG, JPEG, JPG);
 
     @Override
     public byte[] convert(byte[] fileBytes, String fileName) {

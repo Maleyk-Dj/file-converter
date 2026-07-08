@@ -6,9 +6,11 @@ import com.lowagie.text.pdf.PdfWriter;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.springframework.stereotype.Component;
 
-
 @Component
-public class TxtToPdfConverter implements FileConverter{
+public class TxtToPdfConverter implements FileConverter {
+
+    private static final String TXT = "txt";
+
     @Override
     public byte[] convert(byte[] fileBytes, String fileName) {
         try {
@@ -27,6 +29,6 @@ public class TxtToPdfConverter implements FileConverter{
 
     @Override
     public boolean support(String extension) {
-        return "txt".equalsIgnoreCase(extension);
+        return TXT.equalsIgnoreCase(extension);
     }
 }
