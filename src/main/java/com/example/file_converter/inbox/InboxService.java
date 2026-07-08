@@ -19,6 +19,9 @@ public class InboxService {
 
     @Transactional
     public void saveReceived (String messageId) {
+        if (repository.existsById(messageId)) {
+            return;
+        }
         InboxMessage inboxMessage = new InboxMessage();
         inboxMessage.setMessageId(messageId);
         inboxMessage.setStatus("RECEIVED");
