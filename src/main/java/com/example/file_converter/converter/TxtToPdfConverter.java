@@ -7,7 +7,7 @@ import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.springframework.stereotype.Component;
 
 @Component
-public class TxtToPdfConverter implements FileConverter {
+public class TxtToPdfConverter implements LeafConverter {
 
     private static final String TXT = "txt";
 
@@ -23,7 +23,7 @@ public class TxtToPdfConverter implements FileConverter {
             document.close();
             return out.toByteArray();
         } catch (Exception e) {
-            throw new RuntimeException("Failed to convert TXT to PDF", e);
+            throw new RuntimeException("Не удалось конвертировать TXT в PDF.", e);
         }
     }
 

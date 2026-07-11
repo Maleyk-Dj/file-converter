@@ -9,13 +9,13 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ConverterFactory {
 
-    private final List<FileConverter> converters;
+    private final List<LeafConverter> converters;
 
     public FileConverter getConverter(String extension) {
         return converters.stream()
                 .filter(c -> c.support(extension))
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException(
-                        "No converter found for extension: " + extension));
+                        "Конвертер для расширения не найден: " + extension));
     }
 }

@@ -7,16 +7,16 @@ import org.springframework.stereotype.Component;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 @Component
 public class ZipToPdfConverter implements FileConverter {
-    private final List<FileConverter> converters;
 
-    public ZipToPdfConverter(List<FileConverter> converters) {
-        this.converters = converters;
+    private final ConverterFactory converterFactory;
+
+    public ZipToPdfConverter(ConverterFactory converterFactory) {
+        this.converterFactory = converterFactory;
     }
 
     @Override
@@ -33,11 +33,7 @@ public class ZipToPdfConverter implements FileConverter {
                 if (entry.isDirectory()) continue;
                 String ext = getExtension(entry.getName());
                 byte[] entryBytes = zip.readAllBytes();
-                FileConverter converter = converters.stream()
-                        .filter(c -> !(c instanceof ZipToPdfConverter))
-                        .filter(c -> c.support(ext))
-                        .findFirst()
-                        .orElse(null);
+                FileConverter converter = converterFactory.getConverter(ext);
                 if (converter == null) continue;
                 byte[] pdf = converter.convert(entryBytes, entry.getName());
                 PdfReader reader = new PdfReader(pdf);

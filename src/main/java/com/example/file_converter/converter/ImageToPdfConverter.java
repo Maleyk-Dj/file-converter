@@ -9,7 +9,7 @@ import java.io.ByteArrayOutputStream;
 import java.util.Set;
 
 @Component
-public class ImageToPdfConverter implements FileConverter {
+public class ImageToPdfConverter implements LeafConverter {
 
     private static final String PNG = "png";
     private static final String JPEG = "jpeg";
@@ -30,7 +30,7 @@ public class ImageToPdfConverter implements FileConverter {
             document.close();
             return out.toByteArray();
         } catch (Exception e) {
-            throw new RuntimeException("Failed to convert image to PDF", e);
+            throw new RuntimeException("Не удалось преобразовать изображение в PDF", e);
         }
     }
 
