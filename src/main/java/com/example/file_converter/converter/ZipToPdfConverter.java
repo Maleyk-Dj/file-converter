@@ -45,7 +45,7 @@ public class ZipToPdfConverter implements FileConverter {
             document.close();
             return out.toByteArray();
         } catch (Exception e) {
-            throw new RuntimeException("Failed to convert ZIP to PDF", e);
+            throw new RuntimeException("Не удалось конвертировать ZIP в PDF", e);
         }
     }
 

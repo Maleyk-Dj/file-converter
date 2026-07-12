@@ -3,11 +3,13 @@ package com.example.file_converter.kafka;
 import com.example.file_converter.inbox.InboxService;
 import com.example.file_converter.model.FileConversionRequest;
 import com.example.file_converter.model.FileConversionResult;
+import com.example.file_converter.service.ConversionResultService;
 import com.example.file_converter.service.ConversionService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.stereotype.Component;
@@ -17,10 +19,12 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class FileConversionConsumer {
 
+    @Value("${kafka.topics.output}")
+    private String outputTopic;
     private final InboxService inboxService;
     private final ConversionService conversionService;
     private final ObjectMapper objectMapper = new ObjectMapper();
-    private final FileConversionProducer producer;
+    private final ConversionResultService conversionResultService;
 
     @KafkaListener(topics = "${kafka.topics.input}", groupId = "${spring.kafka.consumer.group-id}")
     public void consumer(String message, Acknowledgment ack) {
@@ -33,8 +37,12 @@ public class FileConversionConsumer {
             }
             inboxService.saveReceived(request.getMessageId());
             FileConversionResult result = conversionService.convert(request);
-            producer.send(result);
-            inboxService.markProcessed(request.getMessageId());
+            String payload = objectMapper.writeValueAsString(result);
+            conversionResultService.markProcessedAndSaveOutbox(
+                    request.getMessageId(),
+                    outputTopic,
+                    payload
+            );
             ack.acknowledge();
         } catch (JsonProcessingException e) {
             log.error("Неверный формат сообщения, пропускаю: {}", message, e);
