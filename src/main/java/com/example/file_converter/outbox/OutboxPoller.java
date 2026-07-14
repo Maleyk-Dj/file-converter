@@ -2,32 +2,37 @@ package com.example.file_converter.outbox;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class OutboxPoller {
 
+    private static final long SEND_TIMEOUT_SECONDS = 5;
+
     private final OutboxService outboxService;
     private final KafkaTemplate<String, String> kafkaTemplate;
 
     @Scheduled(fixedDelay = 5000)
+    @SchedulerLock(
+            name = "outboxPoller",
+            lockAtLeastFor = "PT4S",
+            lockAtMostFor = "PT30S"
+    )
     public void poll() {
         outboxService.findAll().forEach(msg -> {
             try {
-                // отправляем в Kafka и ждём подтверждения
-                kafkaTemplate.send(msg.getTopic(), msg.getPayload()).get();
-
-                //  только после успешной отправки помечаем SENT
+                kafkaTemplate.send(msg.getTopic(), msg.getPayload())
+                        .get(SEND_TIMEOUT_SECONDS, TimeUnit.SECONDS);
                 outboxService.markSent(msg.getId());
-
                 log.info("Outbox сообщение отправлено: {}", msg.getId());
             } catch (Exception e) {
-                // если не удалось отправить оставляем NEW
-                // поллер попробует снова через 5 секунд
                 log.error("Не удалось отправить outbox сообщение: {}", msg.getId(), e);
             }
         });

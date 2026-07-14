@@ -23,7 +23,7 @@ public class FileConversionConsumer {
     private String outputTopic;
     private final InboxService inboxService;
     private final ConversionService conversionService;
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper;
     private final ConversionResultService conversionResultService;
 
     @KafkaListener(topics = "${kafka.topics.input}", groupId = "${spring.kafka.consumer.group-id}")

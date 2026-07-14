@@ -24,11 +24,11 @@ public class ZipToPdfConverterTest {
         zip.close();
 
         byte[] zipBytes = baos.toByteArray();
-        List<FileConverter> converters = List.of(
+        List<LeafConverter> converters = List.of(
                 new TxtToPdfConverter(),
                 new ImageToPdfConverter()
         );
-        ZipToPdfConverter converter = new ZipToPdfConverter(converters);
+        ZipToPdfConverter converter = new ZipToPdfConverter(new ConverterFactory(converters));
 
         byte[] result = converter.convert(zipBytes, "test.zip");
 

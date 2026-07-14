@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.util.Optional;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -33,9 +34,9 @@ public class ZipToPdfConverter implements FileConverter {
                 if (entry.isDirectory()) continue;
                 String ext = getExtension(entry.getName());
                 byte[] entryBytes = zip.readAllBytes();
-                FileConverter converter = converterFactory.getConverter(ext);
-                if (converter == null) continue;
-                byte[] pdf = converter.convert(entryBytes, entry.getName());
+                Optional<LeafConverter> converter = converterFactory.findConverter(ext);
+                if (converter.isEmpty()) continue;
+                byte[] pdf = converter.get().convert(entryBytes, entry.getName());
                 PdfReader reader = new PdfReader(pdf);
                 for (int i = 1; i <= reader.getNumberOfPages(); i++) {
                     copy.addPage(copy.getImportedPage(reader, i));

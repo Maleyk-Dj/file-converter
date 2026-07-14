@@ -18,10 +18,9 @@ public class ConverterFactoryTest {
 
     @BeforeEach
     void setUp() {
-        List<FileConverter> converters = List.of(
+        List<LeafConverter> converters = List.of(
                 new TxtToPdfConverter(),
-                new ImageToPdfConverter(),
-                new ZipToPdfConverter(List.of(new TxtToPdfConverter(), new ImageToPdfConverter()))
+                new ImageToPdfConverter()
         );
         factory = new ConverterFactory(converters);
     }
@@ -35,8 +34,7 @@ public class ConverterFactoryTest {
     static Stream<Arguments> provideExtensions() {
         return Stream.of(
                 Arguments.of("txt", TxtToPdfConverter.class),
-                Arguments.of("jpg", ImageToPdfConverter.class),
-                Arguments.of("zip", ZipToPdfConverter.class)
+                Arguments.of("jpg", ImageToPdfConverter.class)
         );
     }
 

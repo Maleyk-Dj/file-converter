@@ -6,6 +6,8 @@ import com.lowagie.text.pdf.PdfWriter;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.springframework.stereotype.Component;
 
+import java.nio.charset.StandardCharsets;
+
 @Component
 public class TxtToPdfConverter implements LeafConverter {
 
@@ -18,7 +20,7 @@ public class TxtToPdfConverter implements LeafConverter {
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             PdfWriter.getInstance(document, out);
             document.open();
-            String text = new String(fileBytes);
+            String text = new String(fileBytes, StandardCharsets.UTF_8);
             document.add(new Paragraph(text));
             document.close();
             return out.toByteArray();

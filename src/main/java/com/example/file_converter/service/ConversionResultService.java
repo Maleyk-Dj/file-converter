@@ -21,4 +21,16 @@ public class ConversionResultService {
             inboxRepository.save(msg);
         });
     }
+
+    // Вызывается из ErrorHandler'а Kafka-контейнера после исчерпания ретраев конвертации:
+    // статус в inbox и FAILED-событие в outbox сохраняются в одной транзакции,
+    // публикация в files.output идёт через тот же OutboxPoller, что и для успеха.
+    @Transactional
+    public void markFailedAndSaveOutbox(String messageId, String topic, String payload) {
+        inboxRepository.findById(messageId).ifPresent(msg -> {
+            msg.setStatus("FAILED");
+            outboxService.save(topic, payload);
+            inboxRepository.save(msg);
+        });
+    }
 }
