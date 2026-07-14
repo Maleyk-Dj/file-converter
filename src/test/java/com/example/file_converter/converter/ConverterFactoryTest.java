@@ -12,7 +12,7 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class ConverterFactoryTest {
+ class ConverterFactoryTest {
 
     private ConverterFactory factory;
 

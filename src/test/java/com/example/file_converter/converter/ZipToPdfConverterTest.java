@@ -10,7 +10,7 @@ import java.util.zip.ZipOutputStream;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class ZipToPdfConverterTest {
+ class ZipToPdfConverterTest {
 
     @Test
     void convert_shouldReturnPdfFromZip() throws Exception {

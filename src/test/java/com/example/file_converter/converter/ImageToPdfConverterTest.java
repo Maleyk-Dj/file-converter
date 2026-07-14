@@ -10,7 +10,7 @@ import java.io.ByteArrayOutputStream;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class ImageToPdfConverterTest {
+ class ImageToPdfConverterTest {
 
     @Test
     void convert_shouldReturnPngToPdf() throws Exception {

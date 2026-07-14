@@ -28,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Testcontainers
-public class FileConversionIntegrationTest {
+ class FileConversionIntegrationTest {
 
     @Container
     static PostgreSQLContainer<?> postgres =
