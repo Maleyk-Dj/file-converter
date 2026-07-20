@@ -5,13 +5,12 @@ import com.example.file_converter.inbox.InboxMessageRepository;
 import com.example.file_converter.inbox.InboxStatus;
 import com.example.file_converter.outbox.OutboxMessage;
 import com.example.file_converter.outbox.OutboxMessageRepository;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.test.context.jdbc.Sql;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -29,20 +28,12 @@ public class IdempotencyIntegrationTest extends BaseIntegrationTest {
     @Autowired
     private OutboxMessageRepository outboxRepository;
 
-    @BeforeEach
-    void setUp() {
-        outboxRepository.deleteAll();
-        inboxRepository.deleteAll();
-    }
-
     @Test
+    @Sql(scripts = "/test-data/idempotency-setup.sql",
+            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_CLASS)
+    @Sql(scripts = "/test-data/cleanup.sql",
+            executionPhase = Sql.ExecutionPhase.AFTER_TEST_CLASS)
     void shouldSKipDuplicateMessage() throws Exception {
-        InboxMessage msg = new InboxMessage();
-        msg.setMessageId("duplicate-001");
-        msg.setStatus(InboxStatus.PROCESSED);
-        msg.setCreatedAt(LocalDateTime.now());
-        inboxRepository.save(msg);
-
         String message = """
                 {
                     "messageId": "duplicate-001",
