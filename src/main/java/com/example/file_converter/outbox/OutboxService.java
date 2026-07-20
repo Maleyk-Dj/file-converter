@@ -18,20 +18,20 @@ public class OutboxService {
         OutboxMessage outboxMessage = new OutboxMessage();
         outboxMessage.setTopic(topic);
         outboxMessage.setPayload(payload);
-        outboxMessage.setStatus("NEW");
+        outboxMessage.setStatus(OutboxStatus.NEW);
         outboxMessage.setCreatedAt(LocalDateTime.now());
         repository.save(outboxMessage);
     }
 
     @Transactional(readOnly = true)
     public List<OutboxMessage> findAll() {
-        return repository.findAllByStatus("NEW");
+        return repository.findAllByStatus(OutboxStatus.NEW);
     }
 
     @Transactional
     public void markSent(Long id) {
         repository.findById(id).ifPresent(outboxMessage -> {
-            outboxMessage.setStatus("SENT");
+            outboxMessage.setStatus(OutboxStatus.SENT);
             repository.save(outboxMessage);
         });
     }

@@ -16,6 +16,8 @@ public class ZipToPdfConverter implements FileConverter {
 
     private final ConverterFactory converterFactory;
 
+    private static final String ZIP = "zip";
+
     public ZipToPdfConverter(ConverterFactory converterFactory) {
         this.converterFactory = converterFactory;
     }
@@ -52,7 +54,7 @@ public class ZipToPdfConverter implements FileConverter {
 
     @Override
     public boolean support(String extension) {
-        return "zip".equalsIgnoreCase(extension);
+        return ZIP.equalsIgnoreCase(extension);
     }
 
     private String getExtension(String fileName) {

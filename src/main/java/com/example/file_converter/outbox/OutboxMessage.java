@@ -14,7 +14,7 @@ public class OutboxMessage {
     private Long id;
     private String topic;
     private String payload;
-    private String status; //NEW/SENT
+    private OutboxStatus status;
     private LocalDateTime createdAt;
 
 }

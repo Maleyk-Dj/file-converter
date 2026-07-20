@@ -13,6 +13,6 @@ import java.time.LocalDateTime;
 public class InboxMessage {
     @Id
     private String messageId;
-    private String status; //RECEIVED, PROCESSED, FAILED
+    private InboxStatus status;
     private LocalDateTime createdAt;
 }

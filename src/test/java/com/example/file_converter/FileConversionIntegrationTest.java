@@ -1,7 +1,7 @@
 package com.example.file_converter;
 
 import com.example.file_converter.inbox.InboxMessageRepository;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.example.file_converter.inbox.InboxStatus;
 import io.minio.BucketExistsArgs;
 import io.minio.MakeBucketArgs;
 import io.minio.MinioClient;
@@ -11,14 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
-import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.containers.KafkaContainer;
-import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
-import org.testcontainers.utility.DockerImageName;
 
 import java.io.ByteArrayInputStream;
 import java.util.concurrent.TimeUnit;
@@ -28,33 +21,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Testcontainers
- class FileConversionIntegrationTest {
-
-    @Container
-    static PostgreSQLContainer<?> postgres =
-            new PostgreSQLContainer<>("postgres:15");
-
-    @Container
-    static KafkaContainer kafka =
-            new KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka:7.6.0"));
-
-    @Container
-    static GenericContainer<?> minio =
-            new GenericContainer<>("minio/minio")
-                    .withCommand("server /data")
-                    .withExposedPorts(9000)
-                    .withEnv("MINIO_ROOT_USER", "minioadmin")
-                    .withEnv("MINIO_ROOT_PASSWORD", "minioadmin");
-
-    @DynamicPropertySource
-    static void configureProperties(DynamicPropertyRegistry registry) {
-        registry.add("spring.datasource.url", postgres::getJdbcUrl);
-        registry.add("spring.datasource.username", postgres::getUsername);
-        registry.add("spring.datasource.password", postgres::getPassword);
-        registry.add("spring.kafka.bootstrap-servers", kafka::getBootstrapServers);
-        registry.add("minio.url", () ->
-                "http://" + minio.getHost() + ":" + minio.getMappedPort(9000));
-    }
+class FileConversionIntegrationTest extends BaseIntegrationTest {
 
     @Autowired
     private KafkaTemplate<String, String> kafkaTemplate;
@@ -63,7 +30,6 @@ import static org.junit.jupiter.api.Assertions.*;
     private InboxMessageRepository inboxMessageRepository;
 
     private MinioClient minioClient;
-    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @BeforeEach
     void setUp() throws Exception {
@@ -72,7 +38,6 @@ import static org.junit.jupiter.api.Assertions.*;
                 .credentials("minioadmin", "minioadmin")
                 .build();
 
-        // Создаём бакеты если их нет
         if (!minioClient.bucketExists(BucketExistsArgs.builder()
                 .bucket("source-files").build())) {
             minioClient.makeBucket(MakeBucketArgs.builder()
@@ -106,7 +71,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
         await().atMost(30, TimeUnit.SECONDS).untilAsserted(() -> {
             assertTrue(inboxMessageRepository
-                    .existsByMessageIdAndStatus("integration-001", "PROCESSED"));
+                    .existsByMessageIdAndStatus("integration-001", InboxStatus.PROCESSED));
         });
     }
 }

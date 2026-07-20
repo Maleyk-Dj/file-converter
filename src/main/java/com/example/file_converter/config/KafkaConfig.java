@@ -25,9 +25,6 @@ public class KafkaConfig {
                                              @Value("${kafka.topics.output}") String outputTopic) {
         DeadLetterPublishingRecoverer dltRecoverer = new DeadLetterPublishingRecoverer(kafkaTemplate);
 
-        // Когда ретраи исчерпаны: оригинал уходит в DLT-топик (для ручного разбора),
-        // а в files.output через transactional outbox публикуется FAILED-событие —
-        // именно на него реагирует дальнейшая цепочка SAGA, а не на DLT.
         ConsumerRecordRecoverer recoverer = (record, exception) -> {
             dltRecoverer.accept(record, exception);
             try {

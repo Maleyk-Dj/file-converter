@@ -14,7 +14,7 @@ public class InboxService {
 
     @Transactional
     public Boolean isAlreadyProcessed(String messageId) {
-        return repository.existsByMessageIdAndStatus(messageId,"PROCESSED");
+        return repository.existsByMessageIdAndStatus(messageId,InboxStatus.PROCESSED);
     }
 
     @Transactional
@@ -24,7 +24,7 @@ public class InboxService {
         }
         InboxMessage inboxMessage = new InboxMessage();
         inboxMessage.setMessageId(messageId);
-        inboxMessage.setStatus("RECEIVED");
+        inboxMessage.setStatus(InboxStatus.RECEIVED);
         inboxMessage.setCreatedAt(LocalDateTime.now());
         repository.save(inboxMessage);
     }
@@ -32,7 +32,7 @@ public class InboxService {
     @Transactional
     public void markProcessed(String messageId) {
         repository.findById(messageId).ifPresent(msg->{
-            msg.setStatus("PROCESSED");
+            msg.setStatus(InboxStatus.PROCESSED);
             repository.save(msg);
         });
     }
