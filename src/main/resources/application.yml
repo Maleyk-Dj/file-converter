@@ -23,9 +23,9 @@ spring:
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
 
 minio:
-  url: http://localhost:9000
-  access-key: minioadmin
-  secret-key: minioadmin
+  endpoint: ${MINIO_ENDPOINT:http://localhost:9000}
+  access-key: ${MINIO_ACCESS_KEY:minioadmin}
+  secret-key: ${MINIO_SECRET_KEY:minioadmin}
   source-bucket: source-files
   converted-bucket: converted-files
 
