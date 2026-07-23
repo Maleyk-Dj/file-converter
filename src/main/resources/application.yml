@@ -1,4 +1,6 @@
 spring:
+  application:
+    name: file-converter
   datasource:
     url: jdbc:postgresql://localhost:5432/converter
     username: converter_user
@@ -33,3 +35,9 @@ kafka:
   topics:
     input: files.input
     output: files.output
+
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
